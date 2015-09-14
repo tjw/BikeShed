@@ -5,28 +5,49 @@ enum SearchResult<T> {
     case Found(index:T)
 }
 
+extension Range {
+    var length:Element.Distance {
+        return startIndex.distanceTo(endIndex)
+    }
+    func indexAtOffset(offset:Element.Distance) -> Element {
+        return startIndex.advancedBy(offset)
+    }
+    func subrangeToIndex(index:Index) -> Range {
+        return Range(start:startIndex, end:index)
+    }
+    func subrangeFromIndex(index:Index) -> Range {
+        return Range(start:index, end:endIndex)
+    }
+}
+
 // Add this to Indexable so that we get it on Array<T>, ArraySlice<T>, and ContiguousArray<T>
 extension Indexable where Self._Element: Comparable {
     
-    func binarySearch(item:Self._Element) -> SearchResult<Self.Index> {
-        var left = self.startIndex
-        var right = self.endIndex
-        
-        while (left.distanceTo(right) > 0) {
-            let mid = left.advancedBy(left.distanceTo(right) / 2)
-            
-            if self[mid] == item {
-                return SearchResult.Found(index:mid)
-            }
-            if self[mid] < item {
-                left = mid.advancedBy(1)
-            } else {
-                right = mid
-            }
+    var entireRange: Range<Self.Index> {
+        return Range(start:startIndex, end:endIndex)
+    }
+    
+    // Can't have `range:Range<Self.Index> = entireRange` here or we get "member 'entireRange' cannot be used on value of protocol type 'Indexable'; use a generic constraint instead", so define to versions of the function.
+    func binarySearch(item:Self._Element, range:Range<Self.Index>) -> SearchResult<Self.Index> {
+        let length = range.length
+        if length == 0 {
+            return SearchResult.Missing(insertIndex:range.startIndex)
         }
         
-        // left == right is a zero length range
-        return SearchResult.Missing(insertIndex:left)
+        let mid = range.indexAtOffset(length / 2)
+        if self[mid] == item {
+            return SearchResult.Found(index:mid)
+        }
+        
+        if self[mid] < item {
+            return binarySearch(item, range:range.subrangeFromIndex(mid.advancedBy(1)))
+        } else {
+            return binarySearch(item, range:range.subrangeToIndex(mid))
+        }
+    }
+    
+    func binarySearch(item:Self._Element) -> SearchResult<Self.Index> {
+        return binarySearch(item, range:entireRange)
     }
 }
 
