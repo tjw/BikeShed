@@ -1,10 +1,4 @@
 
-// Sadly, can't add an enum inside an extension, or this would be better inside Indexable
-enum SearchResult<T> {
-    case Missing(insertIndex:T)
-    case Found(index:T)
-}
-
 extension Range {
     var length:Element.Distance {
         return startIndex.distanceTo(endIndex)
@@ -20,12 +14,20 @@ extension Range {
     }
 }
 
-// Add this to Indexable so that we get it on Array<T>, ArraySlice<T>, and ContiguousArray<T>
-extension Indexable where Self._Element: Comparable {
-    
+extension Indexable {
     var entireRange: Range<Self.Index> {
         return Range(start:startIndex, end:endIndex)
     }
+}
+
+// Sadly, can't add an enum inside an extension, or this would be better inside Indexable
+enum SearchResult<T> {
+    case Missing(insertIndex:T)
+    case Found(index:T)
+}
+
+// Add this to Indexable so that we get it on Array<T>, ArraySlice<T>, and ContiguousArray<T>
+extension Indexable where Self._Element: Comparable {
     
     // Can't have `range:Range<Self.Index> = entireRange` here or we get "member 'entireRange' cannot be used on value of protocol type 'Indexable'; use a generic constraint instead", so define to versions of the function.
     func binarySearch(item:Self._Element, range:Range<Self.Index>) -> SearchResult<Self.Index> {
