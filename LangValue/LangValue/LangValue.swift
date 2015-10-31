@@ -14,7 +14,7 @@ enum LangValue {
         case BadCoercion
     }
     
-    /// Construct a LangValue from an Int
+    /// LangValue support for Int
     case IntValue(value:Int)
     init(_ v:Int) {
         self = LangValue.IntValue(value:v)
@@ -32,6 +32,7 @@ enum LangValue {
     }
     
 
+    /// LangValue support for String
     case StringValue(value:String)
     init(_ v:String) {
         self = LangValue.StringValue(value:v)
@@ -48,7 +49,7 @@ enum LangValue {
         }
     }
 
-    // subscript can't be marked mutating or throws, it seems
+    /// LangValue support for tables
     case Table(value:[String:LangValue])
     init(_ v:[String:LangValue]) {
         self = LangValue.Table(value:v)
@@ -68,6 +69,7 @@ enum LangValue {
         return table[key]
     }
     
+    // subscript can't be marked mutating or throws, it seems
     mutating func setObject(object:LangValue?, forKey key:String) throws {
         guard case .Table(let table) = self else {
             throw Error.BadCoercion
