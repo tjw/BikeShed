@@ -10,6 +10,7 @@
 		34439A191BE45AD800C93819 /* CountedSet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34439A0E1BE45AD800C93819 /* CountedSet.framework */; };
 		34439A1E1BE45AD800C93819 /* CountedSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34439A1D1BE45AD800C93819 /* CountedSetTests.swift */; };
 		34439A291BE45AF400C93819 /* CountedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34439A281BE45AF400C93819 /* CountedSet.swift */; };
+		34C5D4431BE69C5300037981 /* SequenceType-Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C5D4421BE69C5300037981 /* SequenceType-Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +30,7 @@
 		34439A1D1BE45AD800C93819 /* CountedSetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountedSetTests.swift; sourceTree = "<group>"; };
 		34439A1F1BE45AD800C93819 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		34439A281BE45AF400C93819 /* CountedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountedSet.swift; sourceTree = "<group>"; };
+		34C5D4421BE69C5300037981 /* SequenceType-Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SequenceType-Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +75,7 @@
 			children = (
 				34439A131BE45AD800C93819 /* Info.plist */,
 				34439A281BE45AF400C93819 /* CountedSet.swift */,
+				34C5D4421BE69C5300037981 /* SequenceType-Extensions.swift */,
 			);
 			path = CountedSet;
 			sourceTree = "<group>";
@@ -193,6 +196,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34C5D4431BE69C5300037981 /* SequenceType-Extensions.swift in Sources */,
 				34439A291BE45AF400C93819 /* CountedSet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -382,6 +386,7 @@
 				34439A241BE45AD800C93819 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		34439A251BE45AD800C93819 /* Build configuration list for PBXNativeTarget "CountedSetTests" */ = {
 			isa = XCConfigurationList;
@@ -390,6 +395,7 @@
 				34439A271BE45AD800C93819 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

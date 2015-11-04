@@ -26,6 +26,27 @@ private class _Bucket<Element:Hashable> {
         self.items = bucket.items
     }
     
+    var isEmpty: Bool {
+        return items.count == 0
+    }
+
+    var count:Int {
+        return items.reduce(0) {accum, item in accum + item.count}
+    }
+
+    func count(member: Element) -> Int {
+        let item = items.first { $0.element == member }
+        return item?.count ?? 0
+    }
+    
+    func contains(member: Element) -> Bool {
+        return items.any { $0.element == member }
+    }
+    
+    var hashValue: Int {
+        return items.reduce(0) { accum, item in accum ^ item.count.hashValue ^ item.element.hashValue }
+    }
+
     func add(element:Element) {
         let idx = items.indexOf { $0.element == element }
         if let idx = idx {
@@ -55,17 +76,45 @@ private struct _CountedSetStorage<Element:Hashable> {
         self.buckets = bs
     }
     
-    mutating func add(element:Element) {
-        let hash = element.hashValue
-        let bucketIndex = hash % buckets.count
-        var bucket = buckets[bucketIndex]
+    // Could also maintain an independent count of items...
+    var isEmpty: Bool {
+        return buckets.all { $0.isEmpty }
+    }
+
+    var count: Int {
+        return buckets.reduce(0) {accum, bucket in accum + bucket.count }
+    }
+    
+    func contains(member: Element) -> Bool {
+        let b = findBucket(member)
+        return b.bucket.contains(member)
+    }
+
+    func count(member: Element) -> Int {
+        let b = findBucket(member)
+        return b.bucket.count(member)
+    }
+    
+    var hashValue: Int {
+        return buckets.reduce(0) { accum, bucket in accum ^ bucket.hashValue }
+    }
+
+    mutating func add(member:Element) {
+        let b = findBucket(member)
         
+        var bucket = b.bucket
         if !isUniquelyReferencedNonObjC(&bucket) {
             bucket = Bucket(bucket)
-            buckets[bucketIndex] = bucket
+            buckets[b.bucketIndex] = bucket
         }
         
-        bucket.add(element)
+        bucket.add(member)
+    }
+    
+    private func findBucket(element:Element) -> (bucket:Bucket,bucketIndex:Int) {
+        let hash = element.hashValue
+        let bucketIndex = hash % buckets.count
+        return (buckets[bucketIndex], bucketIndex)
     }
 }
 
@@ -73,11 +122,11 @@ private struct _CountedSetStorage<Element:Hashable> {
 // Start with a non-zero number of buckets so add() can use '%' w/o having to check for a zero bucket count.
 private let MinimumBucketCount = 3
 
-public struct CountedSet<Element:Hashable> {
+public struct CountedSet<Element:Hashable> : Equatable, Hashable {
 
     private typealias Storage = _CountedSetStorage<Element>
     
-    private let storage:Storage
+    private var storage:Storage
 
     /// Make an empty set
     public init() {
@@ -95,12 +144,33 @@ public struct CountedSet<Element:Hashable> {
         self.storage = storage
     }
     
-//    public var isEmpty: Bool { get }
-//    public var count: Int { get }
-//    public var hashValue: Int { get }
-//    public func contains(member: Element) -> Bool
-//    public func count(member: Element) -> Int
-//    public mutating func insert(member: Element)
+    public var isEmpty: Bool {
+        return storage.isEmpty
+    }
+
+    // Returns the sum of the counts of all the items in the set (so if a single item has been added twice, it will add two to the count)
+    public var count: Int {
+        return storage.count
+    }
+    
+    public var hashValue: Int {
+        return storage.hashValue
+    }
+    
+    
+    public func contains(member: Element) -> Bool {
+        return storage.contains(member)
+    }
+    
+    public func count(member: Element) -> Int {
+        return storage.count(member)
+    }
+    
+    public mutating func insert(member: Element) {
+        // TODO: Copy on write
+        storage.add(member)
+    }
+    
 //    public mutating func remove(member: Element) -> Element?
 //    public mutating func removeAll()
     
@@ -120,4 +190,9 @@ public struct CountedSet<Element:Hashable> {
     mutating exclusiveOrInPlace
     */
     
+}
+
+public func ==<T>(set1:CountedSet<T>, otherSet:CountedSet<T>) -> Bool {
+    abort() // Enumeate items and check counts? Could maybe convince ourselves that the bucketing of items would be the same, so only bucket by bucket comparision would be needed (but probably not since a removal right after a grow shouldn't shrink the bucket count).
+    return false
 }
